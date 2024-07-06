@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de eventos de seguridad con LLM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        function updatePrompt() {
+            var select = document.getElementById('prompt');
+            var textarea = document.getElementById('editablePrompt');
+            textarea.value = select.options[select.selectedIndex].value;
+        }
+
+        function copyPromptToClipboard() {
+            var results = document.getElementById('promptSend');
+            results.select();
+            document.execCommand('copy');
+            alert('Copiado al portapapeles');
+        }
+
+        function copyResultsToClipboard() {
+            var results = document.getElementById('results');
+            results.select();
+            document.execCommand('copy');
+            alert('Copiado al portapapeles');
+        }
+
+        window.onload = function() {
+            updatePrompt(); // Set the initial value of the textarea
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Análisis de eventos de seguridad con LLM</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="csv_file">Seleccione un archivo CSV:</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv">
+            </div>
+            <div class="form-group">
+                <label for="prompt">Seleccione un prompt para la IA:</label>
+                <select name="prompt" id="prompt" onchange="updatePrompt()" required>
+                    {% for key, prompt in prompts.items() %}
+                        <option value="{{ prompt }}">{{ key }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editablePrompt">Prompt editable:</label>
+                <textarea name="editablePrompt" id="editablePrompt" cols="10" rows="10" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="ai_provider">Seleccione un LLM:</label>
+                <select name="ai_provider" id="ai_provider">
+                    <option value="seleccione">Seleccione</option>
+                    <option value="ejemploVideo">Ejemplo Video</option>
+                    <option value="ejemplo1">Ejemplo1</option>
+                    <option value="ejemplo2">Ejemplo2</option>
+                    <option value="chatgpt">ChatGPT</option>
+                    <option value="openllama">OpenLLaMA</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="checkbox">Limitar la visualización de los parámetros enviados</label>
+                <input type="checkbox" id="checkbox" name="checkbox" checked>                
+            </div>
+            <div class="form-group">
+                <button type="submit">Procesar</button>
+            </div>
+        </form>
+        {% if data %}
+        <div class="result">
+            <strong>Prompt enviado:</strong>
+            <br/><br/>
+            <button onclick="copyPromptToClipboard()">Copiar</button>
+            <br/><br/>
+                <textarea id="promptSend" cols="50" rows="50">{{ prompt }}{{ csv_info }}</textarea> 
+            <h2>Resultados:</h2>
+            <button onclick="copyResultsToClipboard()">Copiar</button>
+            <br/><br/>
+            <textarea id="results" cols="50" rows="50">{{ data }}</textarea>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
